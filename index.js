@@ -13,23 +13,23 @@ app.get("/users", (req, res) => {
   // get user by id
   if (id) {
     const user = users.find((el) => el.id === Number(id));
-    res.send(user);
+    res.send([user]);
   }
 
   //get first user
   else if (position === "first") {
-    res.send(users[0]);
+    res.send([users[0]]);
   }
 
   //get last user
   else if (position === "last") {
-    res.send(users[users.length - 1]);
+    res.send([users[users.length - 1]]);
   }
 
   // get user by company name
   else if (compName) {
     const user = users.find((el) => el.company.name === compName);
-    res.send(user);
+    res.send([user]);
   }
 
   // get users by city
