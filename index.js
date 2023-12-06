@@ -6,50 +6,53 @@ const port = 3000;
 let users = JSON.parse(fs.readFileSync("./users.json", "utf8"));
 app.use(express.json());
 
-//get all users
-app.get("/Users", (req, res) => {
-  res.send(users);
-});
+// get API
+app.get("/users", (req, res) => {
+  const { id, compName, city, position } = req.query;
 
-//get first user
-app.get("/firstUser", (req, res) => {
-  res.send(users[0]);
-});
+  // get user by id
+  if (id) {
+    const user = users.find((el) => el.id === Number(id));
+    res.send(user);
+  }
 
-//get last user
-app.get("/lastUser", (req, res) => {
-  res.send(users[users.length - 1]);
-});
+  //get first user
+  else if (position === "first") {
+    res.send(users[0]);
+  }
 
-//get user by id
-app.get("/find/id/:id", (req, res) => {
-  let id = req.params.id;
-  let user = users.find((el) => el.id === Number(id));
-  res.send(user);
-});
+  //get last user
+  else if (position === "last") {
+    res.send(users[users.length - 1]);
+  }
 
-//get user by company name
-app.get("/find/companyName/:compName", (req, res) => {
-  let compName = req.params.compName;
-  let user = users.find((el) => el.company.name === compName);
-  res.send(user);
-});
+  // get user by company name
+  else if (compName) {
+    const user = users.find((el) => el.company.name === compName);
+    res.send(user);
+  }
 
-//get users by city
-app.get("/find/city/:city", (req, res) => {
-  let city = req.params.city;
-  res.send(users.filter((el) => el.address.city === city));
+  // get users by city
+  else if (city) {
+    const filteredUsers = users.filter((el) => el.address.city === city);
+    res.send(filteredUsers);
+  }
+
+  // if no query parameter is provided, return all users
+  else {
+    res.send(users);
+  }
 });
 
 //get street by id
-app.get("/find/getStreetById/:id", (req, res) => {
+app.get("/users/getStreetById/:id", (req, res) => {
   let id = req.params.id;
   let user = users.find((el) => el.id === Number(id));
   res.send(user.address.street);
 });
 
 //add new user
-app.post("/addUser", (req, res) => {
+app.post("/users/addUser", (req, res) => {
   let id = req.body.id;
   let name = req.body.name;
   let age = req.body.age;
@@ -62,7 +65,7 @@ app.post("/addUser", (req, res) => {
 });
 
 //update user
-app.put("/updateUser/:id", (req, res) => {
+app.put("/users/updateUser/:id", (req, res) => {
   let id = Number(req.params.id);
 
   index = users.findIndex((el) => el.id === id);
@@ -80,7 +83,7 @@ app.put("/updateUser/:id", (req, res) => {
 });
 
 //delete user by id
-app.delete("/deleteUser/:id", (req, res) => {
+app.delete("/users/deleteUser/:id", (req, res) => {
   let id = Number(req.params.id);
   users = users.filter((el) => el.id !== id);
   res.send({ success: true });
