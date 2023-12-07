@@ -9,39 +9,31 @@ app.use(express.json());
 // get API
 app.get("/users", (req, res) => {
   const { id, compName, city, position } = req.query;
+  let resultUsers = users;
 
-  // get user by id
+  // filter by id
   if (id) {
-    const user = users.find((el) => el.id === Number(id));
-    res.send([user]);
+    resultUsers = [resultUsers.find((el) => el.id === Number(id))];
   }
 
-  //get first user
-  else if (position === "first") {
-    res.send([users[0]]);
+  // filter by position
+  if (position === "first") {
+    resultUsers = [resultUsers[0]];
+  } else if (position === "last") {
+    resultUsers = [resultUsers[resultUsers.length - 1]];
   }
 
-  //get last user
-  else if (position === "last") {
-    res.send([users[users.length - 1]]);
+  // filter by company name
+  if (compName) {
+    resultUsers = resultUsers.filter((el) => el.company.name === compName);
   }
 
-  // get user by company name
-  else if (compName) {
-    const user = users.find((el) => el.company.name === compName);
-    res.send([user]);
+  // filter by city
+  if (city) {
+    resultUsers = resultUsers.filter((el) => el.address.city === city);
   }
 
-  // get users by city
-  else if (city) {
-    const filteredUsers = users.filter((el) => el.address.city === city);
-    res.send(filteredUsers);
-  }
-
-  // if no query parameter is provided, return all users
-  else {
-    res.send(users);
-  }
+  res.send(resultUsers);
 });
 
 //get street by id
